@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Job Board</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <%= csrf_meta_tags %>
+  <link rel="stylesheet" href="<%= static_asset_path("application.css", v: JobBoard::VERSION) %>">
+  <script src="<%= static_asset_path("application.js", v: JobBoard::VERSION) %>" defer></script>
+</head>
+<body data-poll-interval="<%= JobBoard.config.poll_interval.to_i %>">
+  <%= render "job_board/shared/nav" %>
+  <main>
+    <% if notice.present? %><div class="flash flash--notice"><%= notice %></div><% end %>
+    <% if alert.present? %><div class="flash flash--alert"><%= alert %></div><% end %>
+    <%= yield %>
+  </main>
+</body>
+</html>

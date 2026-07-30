@@ -1,0 +1,5 @@
+<% if page.more? %>
+  <div class="pagination">
+    <%= link_to "Older →", jobs_path(request.query_parameters.merge(before: page.next_before)), class: "btn" %>
+  </div>
+<% end %>

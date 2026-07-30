@@ -1,0 +1,37 @@
+<h1>Recurring tasks</h1>
+
+<div data-poll-region="recurring">
+  <% if @tasks.empty? %>
+    <p class="empty-state">
+      No recurring tasks. Define them in <code>config/recurring.yml</code> and run a scheduler.
+    </p>
+  <% else %>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Schedule</th>
+          <th>Job</th>
+          <th>Queue</th>
+          <th>Last run</th>
+          <th>Next run</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @tasks.each do |task| %>
+          <tr>
+            <td>
+              <%= task.key %>
+              <% unless task.static %><span class="badge badge--kind">dynamic</span><% end %>
+            </td>
+            <td><code><%= task.schedule %></code></td>
+            <td><%= task.class_name.presence || task.command %></td>
+            <td><%= task.queue_name.presence || "default" %></td>
+            <td><%= time_ago(task.last_enqueued_time) %></td>
+            <td><%= time_ago(task.next_time) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>

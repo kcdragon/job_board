@@ -1,0 +1,63 @@
+<h1>Jobs</h1>
+
+<%= render "job_board/jobs/filters" %>
+
+<nav class="tabs">
+  <% JobBoard::JobsQuery::STATUSES.each do |s| %>
+    <%= link_to jobs_path(status: s, queue_name: params[:queue_name], class_name: params[:class_name]),
+          class: "tab #{"tab--active" if @query.status == s}" do %>
+      <%= s.humanize %> <span class="tab__count"><%= @counts[s] %></span>
+    <% end %>
+  <% end %>
+</nav>
+
+<% if @query.status == "failed" && @counts["failed"].positive? %>
+  <div class="bulk-actions">
+    <%= button_to "Retry all (#{@counts["failed"]})",
+          retry_all_jobs_path(queue_name: params[:queue_name], class_name: params[:class_name]),
+          method: :post, class: "btn",
+          form: { data: { confirm: "Retry all #{@counts["failed"]} failed jobs matching the current filters?" } } %>
+    <%= button_to "Discard all (#{@counts["failed"]})",
+          discard_all_jobs_path(queue_name: params[:queue_name], class_name: params[:class_name]),
+          method: :post, class: "btn btn--danger",
+          form: { data: { confirm: "Permanently discard all #{@counts["failed"]} failed jobs matching the current filters? This can't be undone." } } %>
+  </div>
+<% end %>
+
+<div <%= 'data-poll-region="jobs"'.html_safe unless params[:before] %>>
+  <% if @page.empty? %>
+    <p class="empty-state">
+      <% if @query.status == "finished" && !SolidQueue.preserve_finished_jobs? %>
+        Finished jobs are not preserved (<code>SolidQueue.preserve_finished_jobs</code> is false),
+        so this list will always be empty.
+      <% else %>
+        No <%= @query.status.humanize.downcase %> jobs<%= " matching the current filters" if params[:queue_name].present? || params[:class_name].present? %>.
+      <% end %>
+    </p>
+  <% else %>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Job</th>
+          <th>Queue</th>
+          <% if @query.status == "scheduled" %><th>Scheduled at</th>
+          <% elsif @query.status == "in_progress" %><th>Process</th>
+          <% elsif @query.status == "blocked" %><th>Concurrency key</th>
+          <% elsif @query.status == "failed" %><th>Error</th>
+          <% elsif @query.status == "finished" %><th>Finished</th>
+          <% else %><th class="num">Priority</th>
+          <% end %>
+          <th>Enqueued</th>
+          <% if @query.status == "failed" %><th class="actions"></th><% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% @page.each do |row| %>
+          <%= render "job_board/jobs/job_row", row: row, list_status: @query.status %>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>
+
+<%= render "job_board/shared/pagination", page: @page %>

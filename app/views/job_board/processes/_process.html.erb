@@ -1,0 +1,28 @@
+<% process = node.process %>
+<tr>
+  <td style="padding-left: <%= 12 + depth * 24 %>px"><%= process.name %></td>
+  <td><span class="badge badge--kind"><%= process.kind %></span></td>
+  <td><%= process.hostname %>:<%= process.pid %></td>
+  <td class="meta-cell">
+    <% if process.metadata.present? %>
+      <% process.metadata.each do |key, value| %>
+        <span class="chip"><%= key %>: <%= value.is_a?(Array) ? value.join(", ") : value %></span>
+      <% end %>
+    <% end %>
+  </td>
+  <td>
+    <%= time_ago(process.last_heartbeat_at) %>
+    <% if node.stale %><span class="badge badge--stale">stale</span><% end %>
+  </td>
+  <td class="num">
+    <%= node.claimed_count %>
+    <% tree.claimed_executions_for(process).first(5).each do |execution| %>
+      <% if execution.job %>
+        <%= link_to "##{execution.job.id}", job_path(execution.job), class: "muted" %>
+      <% end %>
+    <% end %>
+  </td>
+</tr>
+<% node.children.each do |child| %>
+  <%= render "job_board/processes/process", node: child, tree: tree, depth: depth + 1 %>
+<% end %>

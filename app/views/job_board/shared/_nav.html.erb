@@ -1,0 +1,9 @@
+<header class="nav">
+  <span class="nav__brand"><%= link_to "Job Board", root_path %></span>
+  <nav class="nav__links">
+    <%= link_to "Queues", queues_path, class: "nav__link #{"nav__link--active" if controller_name == "queues"}" %>
+    <%= link_to "Jobs", jobs_path, class: "nav__link #{"nav__link--active" if controller_name == "jobs"}" %>
+    <%= link_to "Workers", processes_path, class: "nav__link #{"nav__link--active" if controller_name == "processes"}" %>
+    <%= link_to "Recurring", recurring_tasks_path, class: "nav__link #{"nav__link--active" if controller_name == "recurring_tasks"}" %>
+  </nav>
+</header>

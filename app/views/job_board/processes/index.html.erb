@@ -1,0 +1,32 @@
+<h1>Workers</h1>
+
+<div data-poll-region="processes">
+  <% if @tree.orphaned_claimed_count.positive? %>
+    <div class="flash flash--alert">
+      <%= @tree.orphaned_claimed_count %> in-progress
+      <%= "job".pluralize(@tree.orphaned_claimed_count) %> claimed by processes that no longer exist.
+    </div>
+  <% end %>
+
+  <% if @tree.empty? %>
+    <p class="empty-state">No processes registered. Start Solid Queue with <code>bin/jobs</code>.</p>
+  <% else %>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Process</th>
+          <th>Kind</th>
+          <th>Host</th>
+          <th>Details</th>
+          <th>Heartbeat</th>
+          <th class="num">In progress</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @tree.roots.each do |node| %>
+          <%= render "job_board/processes/process", node: node, tree: @tree, depth: 0 %>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>

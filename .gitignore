@@ -1,0 +1,9 @@
+*.gem
+Gemfile.lock
+pkg/
+test/dummy/log/*
+test/dummy/storage/*
+test/dummy/tmp/*
+!test/dummy/log/.keep
+!test/dummy/storage/.keep
+!test/dummy/tmp/.keep

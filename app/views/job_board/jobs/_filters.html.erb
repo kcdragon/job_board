@@ -1,0 +1,16 @@
+<%= form_with url: jobs_path, method: :get, class: "filters" do |form| %>
+  <%= form.hidden_field :status, value: @query.status %>
+  <label>
+    Queue
+    <%= form.select :queue_name, options_for_select(@queues.map(&:name), params[:queue_name]),
+          { include_blank: "All queues" } %>
+  </label>
+  <label>
+    Class
+    <%= form.text_field :class_name, value: params[:class_name], placeholder: "e.g. MyJob" %>
+  </label>
+  <%= form.submit "Filter", class: "btn" %>
+  <% if params[:queue_name].present? || params[:class_name].present? %>
+    <%= link_to "Clear", jobs_path(status: @query.status), class: "filters__clear" %>
+  <% end %>
+<% end %>

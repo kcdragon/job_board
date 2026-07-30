@@ -1,0 +1,56 @@
+<h1>
+  <%= @job.class_name %>
+  <span class="muted">#<%= @job.id %></span>
+  <%= status_badge(@job.status || :discarded) %>
+</h1>
+
+<table class="detail-table">
+  <tr><th>Queue</th><td><%= link_to @job.queue_name, jobs_path(queue_name: @job.queue_name) %></td></tr>
+  <tr><th>Priority</th><td><%= @job.priority %></td></tr>
+  <tr><th>Active Job ID</th><td><code><%= @job.active_job_id %></code></td></tr>
+  <% if @job.concurrency_key.present? %>
+    <tr><th>Concurrency key</th><td><code><%= @job.concurrency_key %></code></td></tr>
+  <% end %>
+  <tr><th>Enqueued</th><td><%= time_ago(@job.created_at) %></td></tr>
+  <% if @job.scheduled_at.present? %>
+    <tr><th>Scheduled</th><td><%= time_ago(@job.scheduled_at) %></td></tr>
+  <% end %>
+  <% if @job.finished_at.present? %>
+    <tr><th>Finished</th><td><%= time_ago(@job.finished_at) %></td></tr>
+  <% end %>
+  <% if @job.process %>
+    <tr><th>Claimed by</th><td><%= @job.process.name %> (<%= @job.process.hostname %>:<%= @job.process.pid %>)</td></tr>
+  <% end %>
+  <% if @job.executions_count.to_i.positive? %>
+    <tr><th>Executions</th><td><%= @job.executions_count %></td></tr>
+  <% end %>
+</table>
+
+<% if @job.error %>
+  <section class="error-panel">
+    <h2><%= @job.error.exception_class %></h2>
+    <p><%= @job.error.message %></p>
+    <% if @job.error.backtrace.present? %>
+      <pre><%= @job.error.backtrace.join("\n") %></pre>
+    <% end %>
+    <div class="actions-row">
+      <%= button_to "Retry", retry_job_path(@job.job), method: :post, class: "btn" %>
+      <%= button_to "Discard", discard_job_path(@job.job), method: :delete, class: "btn btn--danger",
+            form: { data: { confirm: "Permanently discard job ##{@job.id}? This can't be undone." } } %>
+    </div>
+  </section>
+<% end %>
+
+<section>
+  <h2>Arguments</h2>
+  <pre class="code-block"><%= format_json(@job.arguments) %></pre>
+</section>
+
+<% if @job.exception_executions.present? %>
+  <section>
+    <h2>Exception executions</h2>
+    <pre class="code-block"><%= format_json(@job.exception_executions) %></pre>
+  </section>
+<% end %>
+
+<p><%= link_to "← Back to jobs", jobs_path %></p>

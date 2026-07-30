@@ -1,0 +1,31 @@
+<tr>
+  <td>
+    <%= link_to row.class_name, job_path(row.job) %>
+    <span class="muted">#<%= row.id %></span>
+  </td>
+  <td><%= row.queue_name %></td>
+  <% if list_status == "scheduled" %>
+    <td><%= time_ago(row.scheduled_at) %></td>
+  <% elsif list_status == "in_progress" %>
+    <td><%= row.process ? row.process.name : tag.span("orphaned", class: "badge badge--stale") %></td>
+  <% elsif list_status == "blocked" %>
+    <td><code><%= row.concurrency_key %></code></td>
+  <% elsif list_status == "failed" %>
+    <td class="error-cell">
+      <strong><%= row.error_class %></strong>
+      <span class="muted"><%= truncate(row.error_message, length: 80) %></span>
+    </td>
+  <% elsif list_status == "finished" %>
+    <td><%= time_ago(row.finished_at) %></td>
+  <% else %>
+    <td class="num"><%= row.priority %></td>
+  <% end %>
+  <td><%= time_ago(row.enqueued_at) %></td>
+  <% if list_status == "failed" %>
+    <td class="actions">
+      <%= button_to "Retry", retry_job_path(row.job), method: :post, class: "btn" %>
+      <%= button_to "Discard", discard_job_path(row.job), method: :delete, class: "btn btn--danger",
+            form: { data: { confirm: "Permanently discard job ##{row.id}? This can't be undone." } } %>
+    </td>
+  <% end %>
+</tr>
