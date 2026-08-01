@@ -118,6 +118,15 @@ SolidQueue::BlockedExecution.create!(job: blocked, queue_name: "within_5_minutes
                               arguments: [i], finished_at: (i * 10 + 5).minutes.ago))
 end
 
+# --- Long-dead queues (only weeks-old finished jobs) — these land in the
+# "Inactive queues" section, since development configures queue_activity_window ---
+{ "legacy_exports" => 30, "onboarding_v1" => 90 }.each do |queue, days_old|
+  2.times do |i|
+    strip_executions(create_job(queue: queue, age: days_old * 86_400 + i * 3600,
+                                arguments: [i], finished_at: (days_old * 86_400 - 60).seconds.ago))
+  end
+end
+
 # --- Paused queue ---
 SolidQueue::Queue.find_by_name("within_24_hours").pause
 

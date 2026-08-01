@@ -1,50 +1,23 @@
 <h1>Queues</h1>
 
 <div data-poll-region="queues">
-  <% if @queues.empty? %>
+  <% if @queue_list.active.empty? && @queue_list.inactive.empty? %>
     <p class="empty-state">No queues yet — queues appear once jobs are enqueued.</p>
   <% else %>
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Queue</th>
-          <th class="num">Ready jobs</th>
-          <th class="num">Failed</th>
-          <th class="num">Latency</th>
-          <th>Status</th>
-          <th class="actions"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @queues.each do |queue| %>
-          <tr>
-            <td><%= link_to queue.name, jobs_path(status: "ready", queue_name: queue.name) %></td>
-            <td class="num"><%= queue.size %></td>
-            <td class="num">
-              <% failed = @failed_counts[queue.name] || 0 %>
-              <% if failed.positive? %>
-                <%= link_to failed, jobs_path(status: "failed", queue_name: queue.name), class: "failed-count" %>
-              <% else %>
-                <span class="muted">0</span>
-              <% end %>
-            </td>
-            <td class="num">
-              <span class="latency <%= "latency--high" if queue.latency > latency_threshold_for(queue.name) %>" title="<%= queue.latency %> seconds">
-                <%= duration(queue.latency) %>
-              </span>
-            </td>
-            <td><%= queue.paused? ? status_badge(:paused) : status_badge(:active) %></td>
-            <td class="actions">
-              <% if queue.paused? %>
-                <%= button_to "Resume", queue_pause_path(queue.name), method: :delete, class: "btn" %>
-              <% else %>
-                <%= button_to "Pause", queue_pause_path(queue.name), method: :post, class: "btn",
-                      form: { data: { confirm: "Pause queue \"#{queue.name}\"? Workers will stop picking up its jobs." } } %>
-              <% end %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+    <% if @queue_list.active.any? %>
+      <%= render "table", queues: @queue_list.active %>
+    <% else %>
+      <p class="empty-state">No queues have had jobs enqueued in the last <%= duration(@queue_list.window.to_i) %>.</p>
+    <% end %>
+
+    <% if @queue_list.inactive.any? %>
+      <details class="inactive-queues" data-persist="inactive-queues">
+        <summary>
+          Inactive queues (<%= @queue_list.inactive.size %>)
+          <span class="muted">— nothing enqueued in the last <%= duration(@queue_list.window.to_i) %></span>
+        </summary>
+        <%= render "table", queues: @queue_list.inactive %>
+      </details>
+    <% end %>
   <% end %>
 </div>

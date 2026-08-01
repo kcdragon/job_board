@@ -13,6 +13,12 @@ module JobBoard
     # nil falls back to SolidQueue.process_alive_threshold.
     attr_accessor :stale_process_threshold
 
+    # Queues with no job enqueued inside this window (seconds or an
+    # ActiveSupport::Duration) are collapsed into an "Inactive queues"
+    # section on the queues page. Paused queues always stay visible.
+    # nil shows every queue in one table.
+    attr_accessor :queue_activity_window
+
     # Seconds of latency after which a queue is highlighted as breaching.
     # Per-queue override: latency_warning_thresholds["queue_name"] = seconds.
     # Queues named in the within_* convention (e.g. "within_5_minutes") get
@@ -25,6 +31,7 @@ module JobBoard
       @poll_interval = 5
       @per_page = 25
       @stale_process_threshold = nil
+      @queue_activity_window = 30.days
       @latency_warning_threshold = 60
       @latency_warning_thresholds = {}
     end

@@ -69,6 +69,9 @@ JobBoard.configure do |config|
   config.stale_process_threshold = nil  # heartbeat age before a process is flagged stale;
                                         # nil uses SolidQueue.process_alive_threshold (5 min)
   config.http_basic_auth = nil          # see Authentication above
+  config.queue_activity_window = 30.days # collapse queues with nothing enqueued in
+                                         # that window into "Inactive queues";
+                                         # nil shows everything in one table
 
   # Latency (seconds) above which a queue is highlighted as breaching:
   config.latency_warning_threshold = 60                      # global default
@@ -93,6 +96,30 @@ Explicit `latency_warning_thresholds` entries still win over the naming conventi
 
 The queues page also sorts by SLA: queues with a detectable latency target come first
 (strictest at the top), and everything else follows alphabetically.
+
+### Hiding inactive queues
+
+Because Solid Queue derives the queue list from the jobs table, a queue keeps showing
+up as long as *any* job row with its name exists — including queues you retired long
+ago. Each queue's **Last enqueued** column shows when it last received a job, and
+queues with nothing enqueued in the last **30 days** (configurable) collapse into a
+one-click **Inactive queues** section at the bottom of the page — out of the way but
+never invisible, since a quiet queue can be a symptom rather than noise. Paused
+queues always stay in the main table regardless of idleness, because a pause is
+deliberate state someone needs to see.
+
+```ruby
+JobBoard.configure do |config|
+  config.queue_activity_window = 7.days # tighter window
+  # or nil to always show every queue in one table
+end
+```
+
+Also worth knowing: if the lingering rows are preserved finished jobs, Solid Queue's
+dispatcher normally clears them after `SolidQueue.clear_finished_jobs_after` (default
+1 day) — stale names often mean that cleanup isn't running, or that old failed jobs
+are still waiting to be retried or discarded. Dealing with those makes retired queues
+disappear entirely.
 
 ## Notes
 

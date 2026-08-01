@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0
+
+- Queues page: new **Last enqueued** column showing when each queue last received a job.
+- Queues with nothing enqueued in the last 30 days collapse into a one-click
+  "Inactive queues" section. Configurable via `config.queue_activity_window`
+  (`nil` shows everything in one table); paused queues always stay in the main table.
+- The auto-refresh poller now preserves the open/closed state of collapsible sections
+  across refreshes.
+
 ## 0.1.0
 
 Initial release.

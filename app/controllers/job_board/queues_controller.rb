@@ -1,7 +1,7 @@
 module JobBoard
   class QueuesController < ApplicationController
     def index
-      @queues = LatencySla.sort(SolidQueue::Queue.all)
+      @queue_list = QueueList.build
       @failed_counts = SolidQueue::FailedExecution.joins(:job)
         .group("solid_queue_jobs.queue_name").count
     end
