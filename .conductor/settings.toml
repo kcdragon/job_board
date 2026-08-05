@@ -1,0 +1,11 @@
+"$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
+
+[scripts]
+setup = "bundle install && cd test/dummy && bin/rails db:prepare db:seed"
+run_mode = "concurrent"
+
+[scripts.run.demo]
+command = "cd test/dummy && bin/rails server -p $CONDUCTOR_PORT"
+available_in = [ "local" ]
+default = true
+icon = "play"
