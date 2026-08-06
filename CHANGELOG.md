@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0
+
+- Recurring tasks page: **Run now** button to trigger a task outside its schedule
+  (recorded as a run, so "Last run" reflects it), and tasks are now sorted by next
+  run time instead of by key.
+- Hovering a cron schedule shows a plain-English description of when it runs
+  (e.g. `30 9 * * 1-5` → "At 09:30 on Monday through Friday").
+
 ## 0.2.0
 
 - Queues page: new **Last enqueued** column showing when each queue last received a job.

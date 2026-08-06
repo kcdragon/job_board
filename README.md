@@ -15,7 +15,9 @@ queue latency at a glance, jobs by status, failed-job management, worker health,
 - **Workers** — the supervisor → worker/dispatcher/scheduler tree with heartbeat freshness,
   stale-process badges, per-worker in-progress jobs, and a warning when claimed jobs have been
   orphaned by a dead process.
-- **Recurring tasks** — each task's cron schedule, last run, and next run.
+- **Recurring tasks** — each task's cron schedule (hover for a plain-English description),
+  last run, and next run, sorted soonest-first, with a **Run now** button to trigger any
+  task outside its schedule.
 - **Zero dependencies** — the engine serves its own CSS and ~40 lines of vanilla JS. No
   importmap, sprockets, propshaft, or Node requirement. Pages auto-refresh every few seconds.
 

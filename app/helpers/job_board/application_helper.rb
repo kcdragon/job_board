@@ -30,6 +30,13 @@ module JobBoard
       LatencySla.threshold_for(queue_name)
     end
 
+    # <code> tag for a cron schedule, with an English description of the
+    # schedule as a hover tooltip when we can produce one.
+    def cron_schedule(schedule)
+      description = CronDescription.describe(schedule)
+      tag.code(schedule, title: description, class: ("cron" if description))
+    end
+
     def format_json(value)
       value = JSON.parse(value) if value.is_a?(String)
       JSON.pretty_generate(value)

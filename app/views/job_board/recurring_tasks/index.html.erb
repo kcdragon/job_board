@@ -15,6 +15,7 @@
           <th>Queue</th>
           <th>Last run</th>
           <th>Next run</th>
+          <th class="actions"></th>
         </tr>
       </thead>
       <tbody>
@@ -24,11 +25,15 @@
               <%= task.key %>
               <% unless task.static %><span class="badge badge--kind">dynamic</span><% end %>
             </td>
-            <td><code><%= task.schedule %></code></td>
+            <td><%= cron_schedule(task.schedule) %></td>
             <td><%= task.class_name.presence || task.command %></td>
             <td><%= task.queue_name.presence || "default" %></td>
             <td><%= time_ago(task.last_enqueued_time) %></td>
             <td><%= time_ago(task.next_time) %></td>
+            <td class="actions">
+              <%= button_to "Run now", recurring_task_run_path(task.key), class: "btn",
+                    form: { data: { confirm: "Enqueue \"#{task.key}\" now, outside its schedule?" } } %>
+            </td>
           </tr>
         <% end %>
       </tbody>

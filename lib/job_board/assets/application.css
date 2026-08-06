@@ -70,6 +70,13 @@ code {
 
 .muted { color: var(--text-muted); }
 
+/* Cron schedules with a hover description */
+code.cron {
+  cursor: help;
+  text-decoration: underline dotted var(--text-muted);
+  text-underline-offset: 2px;
+}
+
 /* Nav */
 .nav {
   display: flex;
