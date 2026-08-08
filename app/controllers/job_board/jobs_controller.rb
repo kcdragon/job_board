@@ -53,36 +53,37 @@ module JobBoard
     end
 
     private
-      def set_query
-        status = params[:status].presence || "ready"
-        head :not_found and return unless JobsQuery::STATUSES.include?(status)
 
-        @query = JobsQuery.new(
-          status: status,
-          queue_name: params[:queue_name].presence,
-          class_name: params[:class_name].presence
-        )
-      end
+    def set_query
+      status = params[:status].presence || "ready"
+      head :not_found and return unless JobsQuery::STATUSES.include?(status)
 
-      def find_job
-        SolidQueue::Job
-          .includes(:ready_execution, :scheduled_execution, :claimed_execution,
-                    :blocked_execution, :failed_execution)
-          .find(params[:id])
-      end
+      @query = JobsQuery.new(
+        status: status,
+        queue_name: params[:queue_name].presence,
+        class_name: params[:class_name].presence
+      )
+    end
 
-      def failed_jobs_in_batches(&block)
-        query = JobsQuery.new(
-          status: "failed",
-          queue_name: params[:queue_name].presence,
-          class_name: params[:class_name].presence
-        )
-        query.failed_jobs_relation.find_in_batches(batch_size: 500, &block)
-      end
+    def find_job
+      SolidQueue::Job
+        .includes(:ready_execution, :scheduled_execution, :claimed_execution,
+                  :blocked_execution, :failed_execution)
+        .find(params[:id])
+    end
 
-      def failed_jobs_path
-        jobs_path(status: "failed", queue_name: params[:queue_name].presence,
-                  class_name: params[:class_name].presence)
-      end
+    def failed_jobs_in_batches(&block)
+      query = JobsQuery.new(
+        status: "failed",
+        queue_name: params[:queue_name].presence,
+        class_name: params[:class_name].presence
+      )
+      query.failed_jobs_relation.find_in_batches(batch_size: 500, &block)
+    end
+
+    def failed_jobs_path
+      jobs_path(status: "failed", queue_name: params[:queue_name].presence,
+                class_name: params[:class_name].presence)
+    end
   end
 end

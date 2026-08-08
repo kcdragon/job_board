@@ -4,7 +4,9 @@ module JobBoard
 
     ASSETS = {
       "application.css" => "text/css",
-      "application.js" => "text/javascript"
+      "throughput_chart.css" => "text/css",
+      "application.js" => "text/javascript",
+      "throughput_chart.js" => "text/javascript"
     }.freeze
 
     def show

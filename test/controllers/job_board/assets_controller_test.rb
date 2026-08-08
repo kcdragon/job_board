@@ -19,6 +19,22 @@ module JobBoard
       assert_match "data-poll-region", response.body
     end
 
+    test "serves the throughput chart stylesheet" do
+      get "/job_board/assets/throughput_chart.css"
+
+      assert_response :success
+      assert_equal "text/css", response.media_type
+      assert_match ".throughput-chart", response.body
+    end
+
+    test "serves the throughput chart javascript" do
+      get "/job_board/assets/throughput_chart.js"
+
+      assert_response :success
+      assert_equal "text/javascript", response.media_type
+      assert_match "throughput-chart", response.body
+    end
+
     test "unknown assets are not found" do
       get "/job_board/assets/other.css"
       assert_response :not_found

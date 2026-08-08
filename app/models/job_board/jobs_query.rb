@@ -49,38 +49,39 @@ module JobBoard
     end
 
     private
-      def relation
-        case status
-        when "ready"
-          filtered(SolidQueue::ReadyExecution.includes(:job), own_queue_column: true)
-        when "scheduled"
-          filtered(SolidQueue::ScheduledExecution.includes(:job), own_queue_column: true)
-        when "in_progress"
-          filtered(SolidQueue::ClaimedExecution.includes(:process, :job), own_queue_column: false)
-        when "blocked"
-          filtered(SolidQueue::BlockedExecution.includes(:job), own_queue_column: true)
-        when "failed"
-          filtered(SolidQueue::FailedExecution.includes(:job), own_queue_column: false)
-        when "finished"
-          filtered_jobs(SolidQueue::Job.finished)
-        else
-          raise ArgumentError, "unknown status #{status.inspect}"
-        end
-      end
 
-      def filtered(scope, own_queue_column:)
-        if queue_name
-          scope = own_queue_column ? scope.where(queue_name: queue_name)
-                                   : scope.joins(:job).where(solid_queue_jobs: { queue_name: queue_name })
-        end
-        scope = scope.joins(:job).where(solid_queue_jobs: { class_name: class_name }) if class_name
-        scope
+    def relation
+      case status
+      when "ready"
+        filtered(SolidQueue::ReadyExecution.includes(:job), own_queue_column: true)
+      when "scheduled"
+        filtered(SolidQueue::ScheduledExecution.includes(:job), own_queue_column: true)
+      when "in_progress"
+        filtered(SolidQueue::ClaimedExecution.includes(:process, :job), own_queue_column: false)
+      when "blocked"
+        filtered(SolidQueue::BlockedExecution.includes(:job), own_queue_column: true)
+      when "failed"
+        filtered(SolidQueue::FailedExecution.includes(:job), own_queue_column: false)
+      when "finished"
+        filtered_jobs(SolidQueue::Job.finished)
+      else
+        raise ArgumentError, "unknown status #{status.inspect}"
       end
+    end
 
-      def filtered_jobs(scope)
-        scope = scope.where(queue_name: queue_name) if queue_name
-        scope = scope.where(class_name: class_name) if class_name
-        scope
+    def filtered(scope, own_queue_column:)
+      if queue_name
+        scope = own_queue_column ? scope.where(queue_name: queue_name)
+                                 : scope.joins(:job).where(solid_queue_jobs: { queue_name: queue_name })
       end
+      scope = scope.joins(:job).where(solid_queue_jobs: { class_name: class_name }) if class_name
+      scope
+    end
+
+    def filtered_jobs(scope)
+      scope = scope.where(queue_name: queue_name) if queue_name
+      scope = scope.where(class_name: class_name) if class_name
+      scope
+    end
   end
 end

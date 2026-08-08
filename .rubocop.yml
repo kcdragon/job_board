@@ -1,0 +1,25 @@
+inherit_gem:
+  rubocop-rails-omakase: rubocop.yml
+
+AllCops:
+  TargetRubyVersion: 3.2
+  Exclude:
+    - "test/dummy/bin/**/*"
+    - "test/dummy/db/schema.rb"
+    - "test/dummy/config/**/*"
+    - "vendor/**/*"
+
+# House style: methods after `private` sit at the same indentation as the rest,
+# i.e. no extra indent under an access modifier. (omakase disables this cop.)
+Layout/IndentationConsistency:
+  Enabled: true
+  EnforcedStyle: normal
+
+# Match the codebase's existing convention (omakase would require inner spaces).
+Layout/SpaceInsideArrayLiteralBrackets:
+  EnforcedStyle: no_space
+
+# Require a blank line after `private` (the `around` style also keeps one before it).
+Layout/EmptyLinesAroundAccessModifier:
+  Enabled: true
+  EnforcedStyle: around

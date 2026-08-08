@@ -1,5 +1,23 @@
 <h1>Queues</h1>
 
+<section id="throughput-chart" class="throughput-chart"
+         data-metrics-url="<%= metrics_path %>"
+         data-poll-interval="<%= JobBoard.config.poll_interval.to_i %>"
+         data-max-points="120">
+  <div class="throughput-chart__header">
+    <h2>Throughput</h2>
+    <div class="throughput-chart__legend">
+      <span class="tp-key tp-key--enqueued">Enqueued <b data-tp-latest="enqueued">0</b></span>
+      <span class="tp-key tp-key--completed">Completed <b data-tp-latest="completed">0</b></span>
+    </div>
+  </div>
+  <svg class="throughput-chart__svg" viewBox="0 0 600 160" preserveAspectRatio="none"
+       role="img" aria-label="Enqueued and completed jobs per interval">
+    <polyline class="tp-line tp-line--enqueued" fill="none" points=""></polyline>
+    <polyline class="tp-line tp-line--completed" fill="none" points=""></polyline>
+  </svg>
+</section>
+
 <div data-poll-region="queues">
   <% if @queue_list.active.empty? && @queue_list.inactive.empty? %>
     <p class="empty-state">No queues yet — queues appear once jobs are enqueued.</p>

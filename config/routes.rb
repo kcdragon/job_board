@@ -24,5 +24,7 @@ JobBoard::Engine.routes.draw do
     post "run", to: "recurring_tasks/runs#create", as: :recurring_task_run
   end
 
+  get "metrics", to: "metrics#show", as: :metrics
+
   get "assets/:name", to: "assets#show", as: :static_asset, constraints: { name: /[a-z_]+\.(css|js)/ }
 end
