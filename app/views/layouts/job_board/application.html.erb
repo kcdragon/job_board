@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <%= csrf_meta_tags %>
   <link rel="stylesheet" href="<%= static_asset_path("application.css", v: JobBoard::VERSION) %>">
+  <link rel="stylesheet" href="<%= static_asset_path("throughput_chart.css", v: JobBoard::VERSION) %>">
   <script src="<%= static_asset_path("application.js", v: JobBoard::VERSION) %>" defer></script>
+  <script src="<%= static_asset_path("throughput_chart.js", v: JobBoard::VERSION) %>" defer></script>
 </head>
 <body data-poll-interval="<%= JobBoard.config.poll_interval.to_i %>">
   <%= render "job_board/shared/nav" %>

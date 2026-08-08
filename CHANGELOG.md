@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.0
+
+- Queues (home) page: a real-time **Throughput** line chart at the top, plotting jobs
+  that became ready to run against jobs that finished, one point per poll interval.
+  It tracks only what happens after the page loads (no history), keeps a rolling
+  10-minute window scrolling right-to-left, and is fed by a small JSON `metrics`
+  endpoint so the SVG state survives the auto-refresh swap.
+
+  ![Throughput chart with enqueued and completed lines](doc/throughput-0.4.0.png)
+
 ## 0.3.0
 
 - Recurring tasks page: **Run now** button to trigger a task outside its schedule
