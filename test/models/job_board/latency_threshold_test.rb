@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module JobBoard
@@ -13,7 +15,7 @@ module JobBoard
       assert_equal 30, latency_threshold_for("within_30_seconds")
       assert_equal 300, latency_threshold_for("within_5_minutes")
       assert_equal 3600, latency_threshold_for("within_1_hour")
-      assert_equal 86400, latency_threshold_for("within_24_hours")
+      assert_equal 86_400, latency_threshold_for("within_24_hours")
       assert_equal 60, latency_threshold_for("within_1_minute")
     end
 
@@ -34,10 +36,10 @@ module JobBoard
 
     test "sort puts detectable SLAs first, strictest first, then alphabetical" do
       queues = %w[zebra within_1_hour alpha within_30_seconds within_5_minutes]
-        .map { |name| SolidQueue::Queue.new(name) }
+               .map { |name| SolidQueue::Queue.new(name) }
 
       assert_equal %w[within_30_seconds within_5_minutes within_1_hour alpha zebra],
-        LatencySla.sort(queues).map(&:name)
+                   LatencySla.sort(queues).map(&:name)
     end
 
     test "sort treats configured thresholds as detectable SLAs" do

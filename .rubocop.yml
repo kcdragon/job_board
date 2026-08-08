@@ -1,25 +1,36 @@
-inherit_gem:
-  rubocop-rails-omakase: rubocop.yml
-
 AllCops:
   TargetRubyVersion: 3.2
+  NewCops: enable
   Exclude:
     - "test/dummy/bin/**/*"
     - "test/dummy/db/schema.rb"
     - "test/dummy/config/**/*"
     - "vendor/**/*"
 
-# House style: methods after `private` sit at the same indentation as the rest,
-# i.e. no extra indent under an access modifier. (omakase disables this cop.)
+# Keep the codebase's double-quoted strings (RuboCop defaults to single quotes).
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+# Subjective size/complexity limits and the require-every-class-documented cop are more
+# noise than signal for this engine; leave them off.
+Metrics:
+  Enabled: false
+Style/Documentation:
+  Enabled: false
+
+# House style, pinned explicitly so a future RuboCop default change can't move it silently.
+# (Each currently matches RuboCop's own default.)
+
+# Methods after `private` sit at the same indentation as the rest — no extra indent.
 Layout/IndentationConsistency:
-  Enabled: true
   EnforcedStyle: normal
 
-# Match the codebase's existing convention (omakase would require inner spaces).
+# Array literals use no inner spaces.
 Layout/SpaceInsideArrayLiteralBrackets:
   EnforcedStyle: no_space
 
-# Require a blank line after `private` (the `around` style also keeps one before it).
+# A blank line both before and after `private`.
 Layout/EmptyLinesAroundAccessModifier:
-  Enabled: true
   EnforcedStyle: around

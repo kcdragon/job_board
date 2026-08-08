@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module JobBoard
   # Uniform row facade so the jobs table doesn't care whether a row came from
   # an execution record or a finished job.

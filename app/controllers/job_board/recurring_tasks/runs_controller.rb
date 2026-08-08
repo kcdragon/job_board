@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module JobBoard
   module RecurringTasks
     class RunsController < ApplicationController
@@ -9,8 +11,9 @@ module JobBoard
         elsif task.enqueue(at: Time.current)
           redirect_to recurring_tasks_path, notice: "Enqueued \"#{task.key}\"."
         else
-          redirect_to recurring_tasks_path,
-            alert: "\"#{task.key}\" was not enqueued — it already ran at this exact time or the enqueue failed."
+          alert = "\"#{task.key}\" was not enqueued — it already ran at " \
+                  "this exact time or the enqueue failed."
+          redirect_to recurring_tasks_path, alert: alert
         end
       end
     end

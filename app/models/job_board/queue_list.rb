@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module JobBoard
   # Partitions queues into active and inactive based on when each queue last
   # had a job enqueued. A queue is inactive when its newest job is older than
@@ -9,8 +11,8 @@ module JobBoard
 
     def self.build(window: JobBoard.config.queue_activity_window)
       new(LatencySla.sort(SolidQueue::Queue.all),
-        last_enqueued_at: SolidQueue::Job.group(:queue_name).maximum(:created_at),
-        window: window)
+          last_enqueued_at: SolidQueue::Job.group(:queue_name).maximum(:created_at),
+          window: window)
     end
 
     def initialize(queues, last_enqueued_at:, window: nil)

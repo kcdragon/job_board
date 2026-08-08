@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 source "https://rubygems.org"
 
 gemspec
 
-gem "sqlite3"
-gem "puma"
 gem "debug"
-gem "rubocop-rails-omakase", require: false
+gem "puma"
+gem "rubocop", require: false
+gem "sqlite3"

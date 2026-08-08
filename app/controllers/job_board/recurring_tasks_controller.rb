@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module JobBoard
   class RecurringTasksController < ApplicationController
     def index

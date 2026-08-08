@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module JobBoard
@@ -44,7 +46,7 @@ module JobBoard
     test "lists times when there are few, falls back to fields when there are many" do
       assert_equal "Every day at 08:00, 08:30, 12:00, and 12:30", CronDescription.describe("0,30 8,12 * * *")
       assert_equal "Every day at minutes 0, 15, 30, and 45 past hours 8, 10, 12, 14, and 16",
-        CronDescription.describe("0,15,30,45 8,10,12,14,16 * * *")
+                   CronDescription.describe("0,15,30,45 8,10,12,14,16 * * *")
     end
   end
 end

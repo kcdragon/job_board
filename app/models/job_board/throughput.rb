@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 module JobBoard
   class Throughput
-    READY_AT = "COALESCE(scheduled_at, created_at)".freeze
+    READY_AT = "COALESCE(scheduled_at, created_at)"
 
     class << self
       def snapshot(since:)

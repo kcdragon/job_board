@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module JobBoard
   # Detail-page wrapper around a SolidQueue::Job loaded with all five
   # has_one execution associations preloaded.

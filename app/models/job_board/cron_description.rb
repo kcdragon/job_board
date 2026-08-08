@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "fugit"
 
 module JobBoard
@@ -44,6 +46,7 @@ module JobBoard
       if (step = seconds_step)
         # Sub-minute schedules only describe cleanly when nothing else is constrained.
         return nil unless cron.minutes.nil? && cron.hours.nil?
+
         "Every #{step} seconds"
       elsif cron.seconds && cron.seconds != [0]
         nil
@@ -60,7 +63,7 @@ module JobBoard
       else
         times = cron.hours.product(cron.minutes || [0]).sort
         if times.size <= 4
-          "At #{join_and(times.map { |h, m| format("%02d:%02d", h, m) })}"
+          "At #{join_and(times.map { |h, m| format("%<h>02d:%<m>02d", h: h, m: m) })}"
         else
           "At #{numbers("minute", cron.minutes)} past #{numbers("hour", cron.hours)}"
         end
@@ -79,17 +82,19 @@ module JobBoard
       return nil if cron.weekdays.nil?
 
       plain = cron.weekdays.select { |_, nth| nth.nil? }.map { |day,| day % 7 }.sort.uniq
-      nth = cron.weekdays.reject { |_, nth| nth.nil? }.map do |day, n|
+      nth = cron.weekdays.filter_map do |day, n|
+        next if n.nil?
+
         "the #{n == -1 ? "last" : n.ordinalize} #{DAYS[day % 7]} of the month"
       end
 
       phrases = []
       if plain.any?
         phrases << if plain.size > 2 && consecutive?(plain)
-          "#{DAYS[plain.first]} through #{DAYS[plain.last]}"
-        else
-          join_and(plain.map { |day| DAYS[day] })
-        end
+                     "#{DAYS[plain.first]} through #{DAYS[plain.last]}"
+                   else
+                     join_and(plain.map { |day| DAYS[day] })
+                   end
       end
       "on #{join_and(phrases + nth)}"
     end
@@ -99,7 +104,7 @@ module JobBoard
 
       # "0 0 1 1 *" reads better as "on January 1" than "on day 1 of the month in January".
       if cron.monthdays.size == 1 && cron.monthdays.first.positive? &&
-          cron.months&.size == 1 && cron.weekdays.nil?
+         cron.months&.size == 1 && cron.weekdays.nil?
         @month_consumed = true
         return "on #{MONTHS[cron.months.first - 1]} #{cron.monthdays.first}"
       end

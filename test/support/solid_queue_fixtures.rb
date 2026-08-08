@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Factory helpers that create Solid Queue records directly — no workers needed.
 #
 # SolidQueue::Job auto-creates a ready or scheduled execution after create, so

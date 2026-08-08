@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module JobBoard
   # Status-scoped job finder. Each status is driven by its execution table so a
   # row's status is known without calling Job#status (which needs 5 preloads).
@@ -71,8 +73,11 @@ module JobBoard
 
     def filtered(scope, own_queue_column:)
       if queue_name
-        scope = own_queue_column ? scope.where(queue_name: queue_name)
-                                 : scope.joins(:job).where(solid_queue_jobs: { queue_name: queue_name })
+        scope = if own_queue_column
+                  scope.where(queue_name: queue_name)
+                else
+                  scope.joins(:job).where(solid_queue_jobs: { queue_name: queue_name })
+                end
       end
       scope = scope.joins(:job).where(solid_queue_jobs: { class_name: class_name }) if class_name
       scope

@@ -1,4 +1,7 @@
-# Each tick enqueues a batch of jobs and drains the oldest ready ones to finished (or failed), simulating a worker so the dashboard has live traffic to show.
+# frozen_string_literal: true
+
+# Each tick enqueues a batch of jobs and drains the oldest ready ones to finished (or
+# failed), simulating a worker so the dashboard has live traffic to show.
 #
 #   cd test/dummy && bin/rails db:prepare db:seed   # optional starting data
 #   bin/rails "job_board:simulate"                    # run with defaults
@@ -22,7 +25,7 @@ namespace :job_board do
     stop = false
     trap("INT") { stop = true }
 
-    puts "Simulating job traffic (#{duration.zero? ? 'until Ctrl-C' : "#{duration}s"}, " \
+    puts "Simulating job traffic (#{duration.zero? ? "until Ctrl-C" : "#{duration}s"}, " \
          "every #{interval}s). View at /job_board. Ctrl-C to stop."
     deadline = duration.zero? ? nil : Process.clock_gettime(Process::CLOCK_MONOTONIC) + duration
 
@@ -33,13 +36,16 @@ namespace :job_board do
         enqueued += 1
       end
 
-      SolidQueue::ReadyExecution.order(:created_at).limit(rand(1..run_max)).includes(:job).map(&:job).compact.each do |job|
+      ready = SolidQueue::ReadyExecution.order(:created_at).limit(rand(1..run_max))
+      ready.includes(:job).map(&:job).compact.each do |job|
         job.ready_execution&.destroy
         if job.class_name == "FailingJob"
-          SolidQueue::FailedExecution.create!(job: job, error: {
-            "exception_class" => "RuntimeError", "message" => "boom: simulated failure",
+          error = {
+            "exception_class" => "RuntimeError",
+            "message" => "boom: simulated failure",
             "backtrace" => ["app/jobs/failing_job.rb:5:in 'FailingJob#perform'"]
-          })
+          }
+          SolidQueue::FailedExecution.create!(job: job, error: error)
           failed += 1
         else
           job.update!(finished_at: Time.current)
