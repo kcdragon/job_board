@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module JobBoard
   class Configuration
     # nil, or { name: "...", password: "..." } to protect the UI with HTTP Basic auth.

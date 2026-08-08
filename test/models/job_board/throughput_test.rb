@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module JobBoard
@@ -15,7 +17,7 @@ module JobBoard
 
     test "enqueued counts immediate jobs and scheduled jobs whose ready time is in the window" do
       freeze_time do
-        create_ready_job(created_at: 3.seconds.ago)                 # immediate, ready now
+        create_ready_job(created_at: 3.seconds.ago) # immediate, ready now
         create_scheduled_job(scheduled_at: 2.seconds.ago)          # scheduled ready time in window
         create_scheduled_job(scheduled_at: 1.hour.from_now)        # not yet ready — excluded
         create_ready_job(created_at: 30.seconds.ago)               # ready before the window — excluded

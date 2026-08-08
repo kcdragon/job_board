@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module JobBoard
   module Queues
     class PausesController < ApplicationController

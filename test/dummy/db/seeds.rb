@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Realistic Solid Queue data for exercising the Job Board UI.
 # Records are created directly (no running workers needed).
 #
@@ -45,7 +47,7 @@ end
 }.each do |queue, max_age|
   6.times do |i|
     age = (max_age * (i + 1) / 6.0).round
-    job = create_job(queue: queue, class_name: ["SampleJob", "SampleJob", "FailingJob"].sample,
+    job = create_job(queue: queue, class_name: %w[SampleJob SampleJob FailingJob].sample,
                      age: age, arguments: [i, { "batch" => queue }])
     job.ready_execution.update_columns(created_at: age.seconds.ago)
   end
@@ -89,8 +91,8 @@ SolidQueue::ClaimedExecution.insert_all([{ job_id: orphan.id, process_id: nil, c
 
 # --- Failed jobs ---
 5.times do |i|
-  job = strip_executions(create_job(queue: ["within_30_seconds", "within_5_minutes"].sample, class_name: "FailingJob",
-                                    age: 3600 + i * 60, arguments: [i], executions: 1))
+  job = strip_executions(create_job(queue: %w[within_30_seconds within_5_minutes].sample, class_name: "FailingJob",
+                                    age: 3600 + (i * 60), arguments: [i], executions: 1))
   SolidQueue::FailedExecution.create!(
     job: job,
     error: {
@@ -113,17 +115,17 @@ SolidQueue::BlockedExecution.create!(job: blocked, queue_name: "within_5_minutes
 
 # --- Finished jobs ---
 10.times do |i|
-  strip_executions(create_job(queue: ["within_30_seconds", "within_5_minutes", "within_1_hour"].sample,
-                              age: 7200 + i * 300,
-                              arguments: [i], finished_at: (i * 10 + 5).minutes.ago))
+  strip_executions(create_job(queue: %w[within_30_seconds within_5_minutes within_1_hour].sample,
+                              age: 7200 + (i * 300),
+                              arguments: [i], finished_at: ((i * 10) + 5).minutes.ago))
 end
 
 # --- Long-dead queues (only weeks-old finished jobs) — these land in the
 # "Inactive queues" section, since development configures queue_activity_window ---
 { "legacy_exports" => 30, "onboarding_v1" => 90 }.each do |queue, days_old|
   2.times do |i|
-    strip_executions(create_job(queue: queue, age: days_old * 86_400 + i * 3600,
-                                arguments: [i], finished_at: (days_old * 86_400 - 60).seconds.ago))
+    strip_executions(create_job(queue: queue, age: (days_old * 86_400) + (i * 3600),
+                                arguments: [i], finished_at: ((days_old * 86_400) - 60).seconds.ago))
   end
 end
 

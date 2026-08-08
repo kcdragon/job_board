@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ENV["RAILS_ENV"] = "test"
 
 require_relative "dummy/config/environment"
@@ -8,6 +10,8 @@ load File.expand_path("dummy/db/schema.rb", __dir__)
 
 require_relative "support/solid_queue_fixtures"
 
-class ActiveSupport::TestCase
-  include SolidQueueFixtures
+module ActiveSupport
+  class TestCase
+    include SolidQueueFixtures
+  end
 end

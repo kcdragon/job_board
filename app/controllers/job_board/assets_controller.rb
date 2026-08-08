@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module JobBoard
   class AssetsController < ApplicationController
     skip_forgery_protection
@@ -15,7 +17,7 @@ module JobBoard
 
       expires_in 1.year, public: true
       send_file JobBoard::Engine.root.join("lib/job_board/assets", name),
-        type: content_type, disposition: :inline
+                type: content_type, disposition: :inline
     end
   end
 end

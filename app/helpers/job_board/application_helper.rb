@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module JobBoard
   module ApplicationHelper
     def status_badge(status)
@@ -9,14 +11,14 @@ module JobBoard
 
       time = Time.zone.parse(time) if time.is_a?(String)
       tag.time("#{duration((Time.current - time).abs)} #{time.future? ? "from now" : "ago"}",
-        title: time.iso8601, datetime: time.iso8601)
+               title: time.iso8601, datetime: time.iso8601)
     end
 
     def duration(seconds)
       seconds = seconds.to_i
       return "0s" if seconds <= 0
 
-      parts = { "d" => 86400, "h" => 3600, "m" => 60, "s" => 1 }.filter_map do |unit, size|
+      parts = { "d" => 86_400, "h" => 3600, "m" => 60, "s" => 1 }.filter_map do |unit, size|
         value, seconds = seconds.divmod(size)
         "#{value}#{unit}" if value.positive?
       end

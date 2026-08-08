@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 module JobBoard
   class JobsController < ApplicationController
-    before_action :set_query, only: [:index, :retry_all, :discard_all]
+    before_action :set_query, only: %i[index retry_all discard_all]
 
     def index
       @page = @query.page(before: params[:before], limit: JobBoard.config.per_page)
@@ -72,13 +74,13 @@ module JobBoard
         .find(params[:id])
     end
 
-    def failed_jobs_in_batches(&block)
+    def failed_jobs_in_batches(&)
       query = JobsQuery.new(
         status: "failed",
         queue_name: params[:queue_name].presence,
         class_name: params[:class_name].presence
       )
-      query.failed_jobs_relation.find_in_batches(batch_size: 500, &block)
+      query.failed_jobs_relation.find_in_batches(batch_size: 500, &)
     end
 
     def failed_jobs_path

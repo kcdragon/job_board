@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "solid_queue"
 
 require "job_board/version"

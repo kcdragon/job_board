@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module JobBoard
@@ -33,7 +35,7 @@ module JobBoard
 
       assert_response :success
       order = %w[within_30_seconds within_1_hour alerts reports]
-        .map { |name| response.body.index(">#{name}</a>") }
+              .map { |name| response.body.index(">#{name}</a>") }
       assert_equal order.sort, order, "queues out of expected order"
     end
 
@@ -73,9 +75,9 @@ module JobBoard
       assert_response :success
       assert_match "Inactive queues (1)", response.body
       assert response.body.index(">dormant</a>") > response.body.index("<details"),
-        "dormant queue should be inside the inactive <details> section"
+             "dormant queue should be inside the inactive <details> section"
       assert response.body.index(">busy</a>") < response.body.index("<details"),
-        "busy queue should stay in the active table"
+             "busy queue should stay in the active table"
     end
 
     test "index keeps paused idle queues in the active table" do

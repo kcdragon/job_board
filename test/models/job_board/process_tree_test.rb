@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module JobBoard
@@ -10,7 +12,7 @@ module JobBoard
 
       tree = ProcessTree.build(stale_threshold: 5.minutes)
 
-      assert_equal [supervisor.id], tree.roots.map { |n| n.process.id }
+      assert_equal([supervisor.id], tree.roots.map { |n| n.process.id })
       children = tree.roots.first.children
       assert_equal 2, children.size
       worker_node = children.find { |n| n.process.id == worker.id }
@@ -36,7 +38,7 @@ module JobBoard
 
       tree = ProcessTree.build(stale_threshold: 5.minutes)
 
-      assert_equal [worker.id], tree.roots.map { |n| n.process.id }
+      assert_equal([worker.id], tree.roots.map { |n| n.process.id })
     end
 
     test "counts orphaned claimed executions" do
@@ -54,7 +56,7 @@ module JobBoard
 
       tree = ProcessTree.build(stale_threshold: 5.minutes)
 
-      assert_equal [supervisor.id, lone_worker.id], tree.roots.map { |n| n.process.id }
+      assert_equal([supervisor.id, lone_worker.id], tree.roots.map { |n| n.process.id })
     end
   end
 end

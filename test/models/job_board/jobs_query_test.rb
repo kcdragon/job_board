@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module JobBoard
@@ -78,7 +80,8 @@ module JobBoard
     end
 
     test "rows are ordered newest first and paginate with before" do
-      old, newer = create_failed_job, create_failed_job
+      old = create_failed_job
+      newer = create_failed_job
 
       page = JobsQuery.new(status: "failed").page(limit: 1)
       assert_equal [newer.id], page.to_a.map(&:id)

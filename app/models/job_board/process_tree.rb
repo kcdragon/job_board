@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module JobBoard
   # Supervisor -> supervisee tree of SolidQueue processes with staleness flags,
   # claimed-job counts, and the in-progress jobs each worker holds.
@@ -12,11 +14,11 @@ module JobBoard
 
     def initialize(stale_threshold:)
       processes = SolidQueue::Process.order(:id).to_a
-      ids = processes.map(&:id).to_set
+      ids = processes.to_set(&:id)
       counts = SolidQueue::ClaimedExecution.group(:process_id).count
       @claimed_by_process =
         SolidQueue::ClaimedExecution.where(process_id: processes.map(&:id))
-          .includes(:job).group_by(&:process_id)
+                                    .includes(:job).group_by(&:process_id)
 
       cutoff = stale_threshold.ago
       children = processes.group_by(&:supervisor_id)

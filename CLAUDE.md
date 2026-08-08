@@ -5,11 +5,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```sh
-bundle exec rake test                                        # full suite
+bundle exec rake                                             # default: test + rubocop
+bundle exec rake test                                        # full suite (tests only)
 bundle exec rake test TEST=test/models/job_board/page_test.rb  # one file
 bundle exec ruby -Itest test/models/job_board/page_test.rb -n /keyset/  # one test by name
 
-bundle exec rubocop        # lint (run after implementing a plan); rubocop -a to autocorrect
+bundle exec rubocop        # lint only; rubocop -A to autocorrect (incl. unsafe)
 
 # Demo app with seeded data (http://localhost:3000/job_board):
 cd test/dummy && bin/rails db:prepare db:seed && bin/rails server
@@ -17,12 +18,9 @@ cd test/dummy && bin/rails db:prepare db:seed && bin/rails server
 gem build job_board.gemspec   # package; the maintainer runs `gem push` himself — never publish
 ```
 
-**Always run `bundle exec rubocop` after implementing a plan** and fix what it flags
-(`rubocop -a` autocorrects the safe ones) so changes land clean. Config is `.rubocop.yml`,
-inheriting `rubocop-rails-omakase` with a few house overrides: methods after `private` are
-**not** extra-indented (`Layout/IndentationConsistency: normal`) but do get a blank line after
-the modifier (`Layout/EmptyLinesAroundAccessModifier: around`), and array literals use no
-inner spaces.
+**Always run `bundle exec rubocop` after implementing a plan** (or just `bundle exec rake`,
+which runs it after the tests) and fix what it flags (`rubocop -a` autocorrects the safe
+ones, `-A` also the unsafe) so changes land clean.
 
 ## What this is
 

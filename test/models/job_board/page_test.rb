@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module JobBoard
@@ -40,7 +42,7 @@ module JobBoard
     test "row builder maps records" do
       create_ready_job(class_name: "SampleJob")
 
-      page = Page.new(SolidQueue::Job.order(id: :desc)) { |job| job.class_name }
+      page = Page.new(SolidQueue::Job.order(id: :desc), &:class_name)
 
       assert_equal ["SampleJob"], page.to_a
     end

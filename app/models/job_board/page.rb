@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module JobBoard
   # Keyset pagination over a relation ordered by id DESC.
   # Fetches limit + 1 records to detect whether an older page exists.
@@ -24,8 +26,8 @@ module JobBoard
       records.last&.id
     end
 
-    def each(&block)
-      rows.each(&block)
+    def each(&)
+      rows.each(&)
     end
 
     def empty?
