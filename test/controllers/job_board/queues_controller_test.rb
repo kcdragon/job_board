@@ -28,6 +28,25 @@ module JobBoard
       assert_match %r{<a class="failed-count" href="[^"]*status=failed[^"]*">2</a>}, response.body
     end
 
+    test "index shows per-queue running counts linking to the in-progress tab" do
+      create_ready_job(queue: "critical")
+      2.times { create_claimed_job(queue: "critical") }
+
+      get "/job_board/queues"
+
+      assert_response :success
+      assert_match %r{<a class="running-count" href="[^"]*status=in_progress[^"]*">2</a>}, response.body
+    end
+
+    test "index shows a muted zero for queues with no running jobs" do
+      create_ready_job(queue: "critical")
+
+      get "/job_board/queues"
+
+      assert_response :success
+      assert_no_match(/running-count/, response.body)
+    end
+
     test "index sorts queues by SLA strictness, then alphabetically" do
       %w[reports within_1_hour within_30_seconds alerts].each { |q| create_ready_job(queue: q) }
 

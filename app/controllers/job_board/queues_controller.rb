@@ -6,6 +6,8 @@ module JobBoard
       @queue_list = QueueList.build
       @failed_counts = SolidQueue::FailedExecution.joins(:job)
                                                   .group("solid_queue_jobs.queue_name").count
+      @running_counts = SolidQueue::ClaimedExecution.joins(:job)
+                                                    .group("solid_queue_jobs.queue_name").count
     end
   end
 end

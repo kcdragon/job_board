@@ -196,6 +196,7 @@ code.cron {
 .latency { font-weight: 600; }
 .latency--high { color: var(--danger); }
 .failed-count { color: var(--danger); font-weight: 600; }
+.running-count { color: var(--warning); font-weight: 600; }
 
 /* Tabs */
 .tabs {

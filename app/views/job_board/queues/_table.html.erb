@@ -3,6 +3,7 @@
     <tr>
       <th>Queue</th>
       <th class="num">Ready jobs</th>
+      <th class="num">Running</th>
       <th class="num">Failed</th>
       <th class="num">Latency</th>
       <th>Last enqueued</th>
@@ -15,6 +16,14 @@
       <tr>
         <td><%= link_to queue.name, jobs_path(status: "ready", queue_name: queue.name) %></td>
         <td class="num"><%= queue.size %></td>
+        <td class="num">
+          <% running = @running_counts[queue.name] || 0 %>
+          <% if running.positive? %>
+            <%= link_to running, jobs_path(status: "in_progress", queue_name: queue.name), class: "running-count" %>
+          <% else %>
+            <span class="muted">0</span>
+          <% end %>
+        </td>
         <td class="num">
           <% failed = @failed_counts[queue.name] || 0 %>
           <% if failed.positive? %>
