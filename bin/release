@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+#
+# Build and publish the job_board gem to RubyGems.
+#
+# Usage:
+#   bin/release              # full release: preflight checks, tests, build, push, tag
+#   SKIP_TESTS=1 bin/release # skip the `bundle exec rake` gate (not recommended)
+#   SKIP_TAG=1 bin/release   # build and push, but don't create/push a git tag
+#
+# The gem has `rubygems_mfa_required`, so `gem push` will prompt for an OTP.
+# You must be signed in to RubyGems with push rights (`gem signin`).
+
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+# --- Version comes from the single source of truth ---------------------------
+VERSION="$(ruby -r ./lib/job_board/version -e 'print JobBoard::VERSION')"
+GEM_FILE="job_board-${VERSION}.gem"
+TAG="v${VERSION}"
+
+echo "Releasing job_board ${VERSION}"
+echo
+
+# --- Preflight checks --------------------------------------------------------
+branch="$(git rev-parse --abbrev-ref HEAD)"
+if [ "$branch" != "main" ]; then
+  echo "⚠️  You are on '$branch', not 'main'. Releases are normally cut from main."
+  read -r -p "    Continue anyway? [y/N] " reply
+  [[ "$reply" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 1; }
+fi
+
+if [ -n "$(git status --porcelain)" ]; then
+  echo "✗ Working tree is dirty. Commit or stash changes before releasing."
+  git status --short
+  exit 1
+fi
+
+if ! grep -q "^## ${VERSION}\$" CHANGELOG.md; then
+  echo "✗ CHANGELOG.md has no '## ${VERSION}' entry. Add one before releasing."
+  exit 1
+fi
+
+if git rev-parse -q --verify "refs/tags/${TAG}" >/dev/null; then
+  echo "✗ Tag ${TAG} already exists — is ${VERSION} already released? Bump the version first."
+  exit 1
+fi
+
+if gem list --remote --exact job_board 2>/dev/null | grep -q "(.*\b${VERSION}\b.*)"; then
+  echo "✗ job_board ${VERSION} is already published on RubyGems. Bump the version first."
+  exit 1
+fi
+
+# --- Quality gate ------------------------------------------------------------
+if [ "${SKIP_TESTS:-0}" = "1" ]; then
+  echo "⚠️  Skipping tests (SKIP_TESTS=1)."
+else
+  echo "Running tests + RuboCop (bundle exec rake)…"
+  bundle exec rake
+fi
+echo
+
+# --- Build -------------------------------------------------------------------
+echo "Building ${GEM_FILE}…"
+gem build job_board.gemspec
+echo
+
+# --- Confirm before the irreversible publish ---------------------------------
+echo "About to publish ${GEM_FILE} to rubygems.org."
+read -r -p "Push now? (a published version cannot be replaced) [y/N] " reply
+[[ "$reply" =~ ^[Yy]$ ]] || { echo "Built ${GEM_FILE} but did not push. Aborted."; exit 1; }
+
+gem push "${GEM_FILE}"
+echo "✓ Published job_board ${VERSION}"
+
+# --- Tag the release ---------------------------------------------------------
+if [ "${SKIP_TAG:-0}" = "1" ]; then
+  echo "Skipping git tag (SKIP_TAG=1)."
+else
+  git tag -a "${TAG}" -m "job_board ${VERSION}"
+  git push origin "${TAG}"
+  echo "✓ Tagged ${TAG} and pushed to origin"
+fi
+
+echo
+echo "Done. Released job_board ${VERSION}."
