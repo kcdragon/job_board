@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0
+
+- Queues (home) page: new **Running** column showing how many jobs are currently
+  claimed by a worker and in progress for each queue. Positive counts link to that
+  queue's in-progress jobs; the count refreshes live with the page's auto-refresh.
+
+  ![Queues table with a Running column](doc/running-count-0.5.0.png)
+
 ## 0.4.0
 
 - Queues (home) page: a real-time **Throughput** line chart at the top, plotting jobs
